@@ -180,22 +180,22 @@ if uploaded_file is not None:
 	df = get_data()
 	ticker_list = list(df.coin.unique())
 
-if 'df' in locals():
-	chart_all = get_chart_by_symbol(df,ticker_list) 
-	chart_top_equity = get_top_chart(df,topN)
 
-	st.header("All Results")
-	st.altair_chart(
-		chart_all, use_container_width=True
-	)
-	st.header("Top N")
-	st.altair_chart(
-		chart_top_equity, use_container_width=True
-	)
+chart_all = get_chart_by_symbol(df,ticker_list) 
+chart_top_equity = get_top_chart(df,topN)
 
-	symbols = st.multiselect("Choose stocks to visualize", ticker_list, ticker_list[0])
-	chart_symbols = get_chart_by_symbol(df,symbols) 
-	st.header("Symbols")
-	st.altair_chart(
-		chart_symbols, use_container_width=True
-	)
+st.header("All Results")
+st.altair_chart(
+	chart_all, use_container_width=True
+)
+st.header("Top N")
+st.altair_chart(
+	chart_top_equity, use_container_width=True
+)
+
+symbols = st.multiselect("Choose stocks to visualize", ticker_list, ticker_list[0])
+chart_symbols = get_chart_by_symbol(df,symbols) 
+st.header("Symbols")
+st.altair_chart(
+	chart_symbols, use_container_width=True
+)
