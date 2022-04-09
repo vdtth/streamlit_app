@@ -147,11 +147,18 @@ if st.button('Rerun'):
 	else: 
 		subprocess.getstatusoutput('rm /home/tht/Downloads/TradingView_Alerts.csv')
 	subprocess.getstatusoutput('mv /home/tht/Downloads/TradingView_Alerts* /home/tht/Downloads/TradingView_Alerts.csv')
-	df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Thời gian')
+	try:
+		df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Thời gian')
+	else:
+		df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Time')
 	# df1 = pd.read_csv('http://ad6b-116-97-117-125.ngrok.io/TV').sort_values('Thời gian')
 	subprocess.getstatusoutput('rm -r history log*.csv')
-	for alert in df1['Mô tả']:
-		wh(alert)
+	try:
+		for alert in df1['Mô tả']:
+			wh(alert)
+	except:
+		for alert in df1['Description']:
+			wh(alert)
 	df = get_data()
 	ticker_list = list(df.coin.unique())
 
@@ -159,11 +166,20 @@ uploaded_file = st.file_uploader("Upload alert")
 if uploaded_file is not None:
 	df1 = pd.read_csv(uploaded_file)
 	subprocess.getstatusoutput('rm -r history log*.csv')
-	for alert in df1['Mô tả']:
-		wh(alert)
+	try:
+		df1 = df1.sort_values('Thời gian')
+	else:
+		df1 = df1.sort_values('Time')
+	try:
+		for alert in df1['Mô tả']:
+			wh(alert)
+	except:
+		for alert in df1['Description']:
+			wh(alert)
+
 	df = get_data()
 	ticker_list = list(df.coin.unique())
-	
+
 if 'df' in locals():
 	chart_all = get_chart_by_symbol(df,ticker_list) 
 	chart_top_equity = get_top_chart(df,topN)
