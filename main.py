@@ -131,10 +131,10 @@ if os.path.exists('log.csv'):
 
 
 # start_date = st.date_input(
-# 	"Select start date",
-# 	date(2020, 1, 1),
-# 	min_value=datetime.strptime("2020-01-01", "%Y-%m-%d"),
-# 	max_value=datetime.now(),
+#   "Select start date",
+#   date(2020, 1, 1),
+#   min_value=datetime.strptime("2020-01-01", "%Y-%m-%d"),
+#   max_value=datetime.now(),
 # )
 
 
@@ -149,7 +149,7 @@ if st.button('Rerun'):
 	subprocess.getstatusoutput('mv /home/tht/Downloads/TradingView_Alerts* /home/tht/Downloads/TradingView_Alerts.csv')
 	try:
 		df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Thời gian')
-	else:
+	except:
 		df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Time')
 	# df1 = pd.read_csv('http://ad6b-116-97-117-125.ngrok.io/TV').sort_values('Thời gian')
 	subprocess.getstatusoutput('rm -r history log*.csv')
@@ -168,7 +168,7 @@ if uploaded_file is not None:
 	subprocess.getstatusoutput('rm -r history log*.csv')
 	try:
 		df1 = df1.sort_values('Thời gian')
-	else:
+	except:
 		df1 = df1.sort_values('Time')
 	try:
 		for alert in df1['Mô tả']:
