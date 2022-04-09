@@ -209,7 +209,13 @@ def decision_buy_sell_combine(data,last_trade):
 
 def wh(data):
     # get json data/
-    data = json.loads(data)
+    try:
+        data = json.loads(data)
+        if data['type'] == 'future-coin':
+            return
+
+    except:
+        return # not alert
 #     data = data.dict()
     try:
         date = data['time']
