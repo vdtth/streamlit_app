@@ -67,6 +67,7 @@ def decision_buy_sell_combine(data,last_trade):
     output = {}
     coin = data["coin"]
     coin = coin.replace("PERP", "")
+    data['time'] = pd.to_datetime(data['time'],unit='ms')
     precision = get_precision(data)
     type = data["type"]
     name = data["Name"].lower()
