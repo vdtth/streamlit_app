@@ -14,11 +14,8 @@ def space(num_lines=1):
 		st.write("")
 
 
-st.title('Statistic results')
-col1, col2 = st.columns(2)
 
-
-@st.experimental_memo
+# @st.experimental_memo
 def get_data(download=True):
 	df = pd.read_csv('log.csv')
 	df['Date'] = pd.to_datetime(df['Date'],unit='ms')
@@ -122,32 +119,41 @@ def get_chart_by_symbol(df,symbols):
 	)
 	return (lines+points+tooltips ).interactive()
 
-df = get_data()
-ticker_list = list(df.coin.unique())
+
+# ============================================
+st.title('Statistic results')
+if os.path.exists('log.csv'):
+	df = get_data()
+	ticker_list = list(df.coin.unique())
 
 
 
 
 
-start_date = st.date_input(
-	"Select start date",
-	date(2020, 1, 1),
-	min_value=datetime.strptime("2020-01-01", "%Y-%m-%d"),
-	max_value=datetime.now(),
-)
+# start_date = st.date_input(
+# 	"Select start date",
+# 	date(2020, 1, 1),
+# 	min_value=datetime.strptime("2020-01-01", "%Y-%m-%d"),
+# 	max_value=datetime.now(),
+# )
 
 
 	
 
 topN = st.slider('Show top N equity', -10, 10, 5)
 if st.button('Rerun'):
-	subprocess.getstatusoutput('rm /home/tht/Downloads/TradingView_Alerts.csv')
+	if subprocess.getstatusoutput('ls /home/tht/Downloads/TradingView_Alerts_*')[0] == 2: # new filw not found
+		pass
+	else: 
+		subprocess.getstatusoutput('rm /home/tht/Downloads/TradingView_Alerts.csv')
 	subprocess.getstatusoutput('mv /home/tht/Downloads/TradingView_Alerts* /home/tht/Downloads/TradingView_Alerts.csv')
 	df1 = pd.read_csv('~/Downloads/TradingView_Alerts.csv').sort_values('Thời gian')
 	# df1 = pd.read_csv('http://ad6b-116-97-117-125.ngrok.io/TV').sort_values('Thời gian')
 	subprocess.getstatusoutput('rm -r history log*.csv')
 	for alert in df1['Mô tả']:
 		wh(alert)
+	df = get_data()
+	ticker_list = list(df.coin.unique())
 
 uploaded_file = st.file_uploader("Upload alert")
 if uploaded_file is not None:
@@ -155,24 +161,25 @@ if uploaded_file is not None:
 	subprocess.getstatusoutput('rm -r history log*.csv')
 	for alert in df1['Mô tả']:
 		wh(alert)
+	df = get_data()
+	ticker_list = list(df.coin.unique())
+	
+if 'df' in locals():
+	chart_all = get_chart_by_symbol(df,ticker_list) 
+	chart_top_equity = get_top_chart(df,topN)
 
+	st.header("All Results")
+	st.altair_chart(
+		chart_all, use_container_width=True
+	)
+	st.header("Top N")
+	st.altair_chart(
+		chart_top_equity, use_container_width=True
+	)
 
-chart_all = get_chart_by_symbol(df,ticker_list) 
-
-chart_top_equity = get_top_chart(df,topN)
-
-st.header("All Results")
-st.altair_chart(
-	chart_all, use_container_width=True
-)
-st.header("Top N")
-st.altair_chart(
-	chart_top_equity, use_container_width=True
-)
-
-symbols = st.multiselect("Choose stocks to visualize", ticker_list, ticker_list[0])
-chart_symbols = get_chart_by_symbol(df,symbols) 
-st.header("Symbols")
-st.altair_chart(
-	chart_symbols, use_container_width=True
-)
+	symbols = st.multiselect("Choose stocks to visualize", ticker_list, ticker_list[0])
+	chart_symbols = get_chart_by_symbol(df,symbols) 
+	st.header("Symbols")
+	st.altair_chart(
+		chart_symbols, use_container_width=True
+	)

@@ -217,6 +217,10 @@ def wh(data):
         return
     print(data)
     data["max_SO"] = 4
+    # print(data['time'])
+    # data['time'] = str(pd.to_datetime(data['time']))
+    
+    # date = str(pd.to_datetime(data['time']))
     coin = data["coin"]
     trade_mode  = data["Demo"]
     timeframe = data["Timeframe"]
@@ -242,7 +246,7 @@ def wh(data):
     name = data["Name"].lower()
     write_log = False
     coin = coin.replace("PERP", "")
-    message = json.dumps(data)
+    # message = json.dumps(data)
     
     #initial file log
 #     date = f"{datetime.datetime.now():%y-%m-%d,%H:%M}"  
