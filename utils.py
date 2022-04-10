@@ -76,6 +76,17 @@ def decision_buy_sell_combine(data,last_trade):
     SO_price_list = [data["SO_1_price"],data["SO_2_price"],data["SO_3_price"],data["SO_4_price"],0.03,0.0375]
 #     #COMMISSION =  data["commission"]/100
     COMMISSION = 0.04/100
+
+    #skip already recorded trades
+    if data['time']<=pd.to_datetime(last_trade['Date'],unit='ms'): 
+    # print(data['time'],'\n',pd.to_datetime(last_trade['Date'],unit='ms'),'\n',data['time']<=pd.to_datetime(last_trade['Date'],unit='ms'))
+    # print("===================")
+    # if int(data['time'])<=last_trade['Date']: 
+
+        write_log = False
+        return output,write_log
+
+
     if int(data["Timeframe"]) < 16:
         TP_threshold = -10/100
     else:
@@ -96,6 +107,7 @@ def decision_buy_sell_combine(data,last_trade):
             avg_price = price
 #             if data["Demo"] != "demo":
 #                 order(data,quantity)
+            output["Equity"] = last_trade["Equity"]  - COMMISSION*quantity*price
  
         else:
             current_SO = last_trade['SO']
@@ -113,6 +125,7 @@ def decision_buy_sell_combine(data,last_trade):
                 avg_price = (price*quantity + last_trade['Price']*abs(last_trade['Last_vol']))/(quantity+abs(last_trade['Last_vol']))
 #                 if data["Demo"] != "demo":
 #                     order(data,quantity)
+                output["Equity"] = last_trade["Equity"]  - COMMISSION*quantity*price
             else:
                 print(f"Skip Long SO{current_SO+1} long because at {(last_trade['Avg_price']-price)/last_trade['Avg_price']*100:.2} < {SO_price_list[current_SO]*100}")
                 write_log = False
@@ -129,7 +142,7 @@ def decision_buy_sell_combine(data,last_trade):
             avg_price = price
 #             if data["Demo"] != "demo":
 #                 order(data,quantity) 
-
+            output["Equity"] = last_trade["Equity"]  - COMMISSION*quantity*price
         else:
 
             current_SO = last_trade['SO']
@@ -147,6 +160,7 @@ def decision_buy_sell_combine(data,last_trade):
                 avg_price = (price*quantity + last_trade['Price']*abs(last_trade['Last_vol']))/(quantity+abs(last_trade['Last_vol']))
 #                 if data["Demo"] != "demo":
 #                     order(data,quantity)
+                output["Equity"] = last_trade["Equity"]  - COMMISSION*quantity*price
             else:
                #print(f"Skip {current_SO+1} long because at {-(last_trade['Avg_price']-price)/price:.2%} < {SO_price_list[current_SO-1]}"
                 print(f"Skip short SO{current_SO+1} long because at {(-last_trade['Avg_price']+price)/last_trade['Avg_price']*100:.2} < {SO_price_list[current_SO]*100}")
@@ -164,6 +178,7 @@ def decision_buy_sell_combine(data,last_trade):
                 avg_price = 0
 #                 if data["Demo"] != "demo":
 #                     order(data,quantity)
+                output["Equity"] = last_trade["Equity"]*(1+total_profit/100)
             else:
                 profit_per = (price - last_trade['Avg_price'])/last_trade['Avg_price']*100
                 print(f"{profit_per:.2f} Smaller than TP long threshold")
@@ -184,6 +199,7 @@ def decision_buy_sell_combine(data,last_trade):
                 print(f"TP short {coin} price:{price}")
 #                 if data["Demo"] != "demo":
 #                     order(data,quantity)
+                output["Equity"] = last_trade["Equity"]*(1+total_profit/100) #output["remain_money"] + avg_price*abs(output["final_vol"]) #avg_price
             else:
                 profit_per = -(price - last_trade['Avg_price'])/last_trade['Avg_price']*100
                 print(f"{profit_per:.2f} Smaller than TP short threshold")
@@ -203,7 +219,7 @@ def decision_buy_sell_combine(data,last_trade):
         output["G_profit"] = total_profit
         output["SO"] = current_SO
         output["Avg_price"] = avg_price
-        output["Equity"] = output["remain_money"] + avg_price*abs(output["final_vol"]) #avg_price
+        
     return output,write_log
 
 
